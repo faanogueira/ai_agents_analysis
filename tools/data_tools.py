@@ -122,3 +122,107 @@ def impacto_desconto() -> dict:
         vendas_total=("Sales", "sum")
     ).round(2)
     return grupo.to_dict(orient="index")
+
+# ── Tools de Logística ─────────────────────────────────────────
+
+def analise_abc_produtos(top_n: int = 10) -> dict:
+    """
+    Classifica produtos em A, B, C por contribuição de receita.
+    Usada pelo Agente de Logística para priorização de estoque.
+    Classe A = top 80% da receita, B = 80-95%, C = 95-100%.
+    """
+    df = _carregar_dados()
+
+    # Agrupa por produto
+    produtos = df.groupby("Product Name").agg(
+        vendas=("Sales", "sum"),
+        lucro=("Profit", "sum"),
+        quantidade=("Quantity", "sum"),
+        pedidos=("Order ID", "count")
+    ).round(2).sort_values("vendas", ascending=False)
+
+    # Calcula percentual acumulado
+    produtos["pct_acumulado"] = (
+        produtos["vendas"].cumsum() / produtos["vendas"].sum() * 100
+    ).round(2)
+
+    # Classifica em A, B, C
+    produtos["classe"] = "C"
+    produtos.loc[produtos["pct_acumulado"] <= 80, "classe"] = "A"
+    produtos.loc[
+        (produtos["pct_acumulado"] > 80) &
+        (produtos["pct_acumulado"] <= 95), "classe"] = "B"
+
+    return {
+        "classe_a": produtos[produtos["classe"] == "A"].head(top_n).to_dict(orient="index"),
+        "classe_b": produtos[produtos["classe"] == "B"].head(top_n).to_dict(orient="index"),
+        "classe_c": produtos[produtos["classe"] == "C"].head(top_n).to_dict(orient="index"),
+        "resumo": {
+            "total_produtos_a": int((produtos["classe"] == "A").sum()),
+            "total_produtos_b": int((produtos["classe"] == "B").sum()),
+            "total_produtos_c": int((produtos["classe"] == "C").sum()),
+        }
+    }
+
+def analise_shipping() -> dict:
+    """
+    Analisa performance de envio por modalidade e região.
+    Usada pelo Agente de Logística para otimização de frete.
+    """
+    df = _carregar_dados()
+
+    # Calcula tempo de envio em dias
+    df["tempo_envio"] = (
+        pd.to_datetime(df["Ship Date"]) - pd.to_datetime(df["Order Date"])
+    ).dt.days
+
+    # Agrupa por modalidade de envio
+    por_modalidade = df.groupby("Ship Mode").agg(
+        pedidos=("Order ID", "count"),
+        tempo_medio_dias=("tempo_envio", "mean"),
+        vendas_total=("Sales", "sum"),
+        lucro_total=("Profit", "sum")
+    ).round(2)
+    por_modalidade["margem_pct"] = (
+        por_modalidade["lucro_total"] / por_modalidade["vendas_total"] * 100
+    ).round(2)
+
+    # Agrupa por região e modalidade
+    por_regiao = df.groupby(["Region", "Ship Mode"]).agg(
+        pedidos=("Order ID", "count"),
+        tempo_medio_dias=("tempo_envio", "mean")
+    ).round(2)
+
+    return {
+        "por_modalidade": por_modalidade.to_dict(orient="index"),
+        "por_regiao": por_regiao.to_dict(orient="index"),
+        "tempo_medio_geral": round(df["tempo_envio"].mean(), 2),
+        "tempo_maximo": int(df["tempo_envio"].max()),
+        "tempo_minimo": int(df["tempo_envio"].min()),
+    }
+
+def margem_por_produto(bottom_n: int = 10) -> dict:
+    """
+    Analisa margem de lucro por produto.
+    Identifica produtos que devem ser descontinuados.
+    """
+    df = _carregar_dados()
+
+    produtos = df.groupby(["Product Name", "Category", "Sub-Category"]).agg(
+        vendas=("Sales", "sum"),
+        lucro=("Profit", "sum"),
+        quantidade=("Quantity", "sum")
+    ).round(2)
+
+    produtos["margem_pct"] = (
+        produtos["lucro"] / produtos["vendas"] * 100
+    ).round(2)
+
+    produtos = produtos[produtos["vendas"] > 100]  # Filtra produtos relevantes
+
+    return {
+        "piores_margens": produtos.sort_values("margem_pct").head(bottom_n).to_dict(orient="index"),
+        "melhores_margens": produtos.sort_values("margem_pct", ascending=False).head(bottom_n).to_dict(orient="index"),
+        "produtos_prejuizo": int((produtos["lucro"] < 0).sum()),
+        "total_prejuizo": round(produtos[produtos["lucro"] < 0]["lucro"].sum(), 2),
+    }
