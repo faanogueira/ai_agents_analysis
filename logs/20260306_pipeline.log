@@ -1,0 +1,16 @@
+2026-03-06 22:28:03,487 [INFO] Agente Analista: coletando dados...
+2026-03-06 22:28:05,517 [INFO] Agente Analista: dados coletados com sucesso!
+2026-03-06 22:28:05,517 [INFO] Agente Analista: gerando analise executiva com Gemini...
+2026-03-06 22:28:05,519 [INFO] AFC is enabled with max remote calls: 10.
+2026-03-06 22:28:24,804 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-03-06 22:28:24,810 [INFO] Agente Analista: analise executiva gerada com sucesso!
+2026-03-06 22:28:24,812 [INFO] Agente CEO: gerando relatorio estrategico...
+2026-03-06 22:28:24,814 [INFO] AFC is enabled with max remote calls: 10.
+2026-03-06 22:28:50,860 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-03-06 22:28:50,865 [INFO] Agente CEO: relatorio gerado com sucesso!
+2026-03-06 22:28:50,867 [INFO] Relatorio CEO salvo em: reports/20260306_222850_relatorio_ceo.md
+2026-03-06 22:28:50,868 [INFO] Agente Vendas: gerando relatorio operacional...
+2026-03-06 22:28:50,870 [INFO] AFC is enabled with max remote calls: 10.
+2026-03-06 22:29:32,623 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-03-06 22:29:32,632 [INFO] Agente Vendas: relatorio gerado com sucesso!
+2026-03-06 22:29:32,633 [INFO] Relatorio Vendas salvo em: reports/20260306_222932_relatorio_vendas.md

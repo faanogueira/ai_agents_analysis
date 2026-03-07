@@ -1,78 +1,78 @@
-# agents/sales_agent.py — Agente Redator Vendas: gera relatório operacional
+# agents/sales_agent.py -- Agente Redator Vendas: gera relatorio operacional
 import os
 import json
 from google import genai
 from dotenv import load_dotenv
 from tools.report_tools import salvar_relatorio
+from utils.helpers import com_retry, logger
 
 load_dotenv()
 
-# ── Inicializa cliente Gemini ──────────────────────────────────
+# -- Inicializa cliente Gemini
 cliente = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
+
 def gerar_relatorio_vendas(analise_executiva: str, dados: dict) -> str:
-    """
-    Recebe a análise do Agente Analista e gera um relatório
-    operacional de vendas formatado para o time comercial.
-    """
-    print("📈 Agente Vendas: gerando relatório operacional...")
+    """Gera relatorio operacional de vendas formatado para o time comercial."""
+    logger.info("Agente Vendas: gerando relatorio operacional...")
 
     dados_json = json.dumps(dados, ensure_ascii=False, indent=2, default=str)
 
     prompt = f"""
-Você é um gerente sênior de vendas preparando um relatório operacional
+Voce e um gerente senior de vendas preparando um relatorio operacional
 para o time comercial da Superstore.
 
-Baseado na análise abaixo, crie um relatório operacional em português,
-prático e orientado a ação, focado em performance regional e por categoria.
+Baseado na analise abaixo, crie um relatorio operacional em portugues,
+pratico e orientado a acao, focado em performance regional e por categoria.
 
-ANÁLISE DO ANALISTA:
+ANALISE DO ANALISTA:
 {analise_executiva}
 
 DADOS BRUTOS:
 {dados_json}
 
-O relatório deve seguir EXATAMENTE esta estrutura em Markdown:
+O relatorio deve seguir EXATAMENTE esta estrutura em Markdown:
 
-# Relatório Operacional de Vendas — Superstore (2014-2017)
-**Destinatário:** Gerência de Vendas e Time Comercial
+# Relatorio Operacional de Vendas -- Superstore (2014-2017)
+**Destinatario:** Gerencia de Vendas e Time Comercial
 
 ## Resumo de Performance
-[Visão rápida dos números de vendas com comparativo entre períodos]
+[Visao rapida dos numeros de vendas com comparativo entre periodos]
 
 ## Performance Regional Detalhada
-[Análise de cada região com pontos fortes, fracos e metas sugeridas]
+[Analise de cada regiao com pontos fortes, fracos e metas sugeridas]
 
-## Análise por Categoria e Sub-Categoria
-[Top performers e subcategorias problemáticas com recomendações táticas]
+## Analise por Categoria e Sub-Categoria
+[Top performers e subcategorias problematicas com recomendacoes taticas]
 
 ## Perfil dos Clientes por Segmento
-[Análise de Consumer, Corporate e Home Office com estratégias específicas]
+[Analise de Consumer, Corporate e Home Office com estrategias especificas]
 
-## Análise do Impacto de Descontos
-[Como os descontos estão afetando as vendas e margem por região/categoria]
+## Analise do Impacto de Descontos
+[Como os descontos estao afetando as vendas e margem por regiao/categoria]
 
-## Metas e Ações para o Próximo Trimestre
-[Metas SMART por região e categoria com responsáveis]
+## Metas e Acoes para o Proximo Trimestre
+[Metas SMART por regiao e categoria com responsaveis]
 
-## Ranking de Produtos — Foco Imediato
+## Ranking de Produtos -- Foco Imediato
 [Top 5 produtos para impulsionar e bottom 5 para revisar]
 
-Use linguagem comercial e prática. Foque em ações concretas que o
-time de vendas pode executar imediatamente. Inclua metas numéricas.
+Use linguagem comercial e pratica. Foque em acoes concretas que o
+time de vendas pode executar imediatamente. Inclua metas numericas.
 """
 
-    resposta = cliente.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
+    resposta = com_retry(
+        lambda: cliente.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
     )
 
     relatorio = resposta.text
-    print("✅ Agente Vendas: relatório gerado!")
+    logger.info("Agente Vendas: relatorio gerado com sucesso!")
 
-    # Salva o relatório em arquivo Markdown
     caminho = salvar_relatorio("relatorio_vendas", relatorio)
-    print(f"💾 Relatório salvo em: {caminho}")
+    logger.info(f"Relatorio Vendas salvo em: {caminho}")
 
     return relatorio
 
@@ -83,11 +83,8 @@ if __name__ == "__main__":
 
     from agents.analyst_agent import coletar_dados_analiticos, gerar_analise_executiva
 
-    # Coleta dados e gera análise
     dados = coletar_dados_analiticos()
     analise = gerar_analise_executiva(dados)
-
-    # Gera relatório de Vendas
     relatorio = gerar_relatorio_vendas(analise, dados)
 
     print("\n" + "=" * 60)
