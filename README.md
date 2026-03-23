@@ -1,4 +1,4 @@
-# 🤖 Superstore Analytics — Sistema Multiagente de IA
+# Superstore Analytics — Sistema Multiagente de IA
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Google Gemini](https://img.shields.io/badge/Google%20Gemini-2.5%20Flash-orange?logo=google&logoColor=white)](https://ai.google.dev/)
@@ -48,6 +48,10 @@ O sistema analisa o dataset *Sample Superstore* (varejo USA 2014-2017) com **9.9
 ---
 
 ## 🖥️ Demonstração
+
+Rodando o pipeline (captura de tela)
+
+[![Rodando o Pipeline](https://www.youtube.com/watch?v=ID_DO_VIDEO)
 
 Saída do pipeline no terminal:
 
