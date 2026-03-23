@@ -51,7 +51,8 @@ O sistema analisa o dataset *Sample Superstore* (varejo USA 2014-2017) com **9.9
 
 Rodando o pipeline (captura de tela)
 
-[![Rodando o Pipeline](https://www.youtube.com/watch?v=ID_DO_VIDEO)
+[![Rodando o Pipeline](https://img.youtube.com/vi/6smQFyUhoD4/0.jpg)](https://www.youtube.com/watch?v=6smQFyUhoD4)
+
 
 Saída do pipeline no terminal:
 
