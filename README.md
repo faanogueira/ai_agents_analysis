@@ -1,5 +1,9 @@
 # Superstore Analytics — Sistema Multiagente de IA
 
+<div align="center">
+  <img src="cover.png" width="100%" alt="Capa do Projeto">
+</div>
+
 [![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Google Gemini](https://img.shields.io/badge/Google%20Gemini-2.5%20Flash-orange?logo=google&logoColor=white)](https://ai.google.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
